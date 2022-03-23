@@ -11,6 +11,8 @@ class App extends React.Component {
       page: 'list',
       notes: []
     };
+
+    this.updateNote = this.updateNote.bind(this);
   }
 
   changePage(page){
@@ -19,9 +21,24 @@ class App extends React.Component {
     })
   }
 
+  updateNote(noteId, valueToUpdate, newValue) {
+    const notes = this.state.notes.slice();
+
+    for(let i = 0; i < notes.length; i++) {
+      if (notes[i].id === noteId) {
+        notes[i][valueToUpdate] = newValue;
+        break;
+      }
+    }
+
+    this.setState({
+      notes
+    });
+  }
+
   pageRouter(){
     if(this.state.page === 'list'){
-      return <Notes notes={this.state.notes}/>
+      return <Notes notes={this.state.notes} updateNote={this.updateNote}/>
     } else if (this.state.page === 'newNote'){
       return <AddNote/>
     }
@@ -30,8 +47,17 @@ class App extends React.Component {
   componentDidMount() {
     axios.get('/api/notes')
     .then((response) => {
+
+      const notes = [];
+      response.data.forEach((note) => {
+        note.selected = false;
+        notes.push(note);
+      });
+
+      console.log(notes);
+
       this.setState({
-        notes: response.data
+        notes: notes
       })
     })
     .catch(() => {
