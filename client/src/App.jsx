@@ -16,6 +16,8 @@ class App extends React.Component {
 
     this.updateSelectedNote = this.updateSelectedNote.bind(this);
     this.changePage = this.changePage.bind(this);
+    this.makeHidden = this.makeHidden.bind(this);
+    this.makeStarred = this.makeStarred.bind(this);
   }
 
   changePage(page){
@@ -23,6 +25,40 @@ class App extends React.Component {
       page: page
     });
   }
+
+  makeStarred(noteId) {
+    const notes = this.state.notes.slice();
+    let note;
+
+    for(let i = 0; i < notes.length; i++) {
+      if (notes[i].id === noteId) {
+        note = notes[i];
+        break;
+      }
+    }
+
+    if (!note.hidden) {
+      note.starred ? note.starred = false : note.starred = true;
+    }
+  }
+
+  makeHidden(noteId) {
+    const notes = this.state.notes.slice();
+    let note;
+
+    for(let i = 0; i < notes.length; i++) {
+      if (notes[i].id === noteId) {
+        note = notes[i];
+        break;
+      }
+    }
+
+    if (!note.starred) {
+      note.hidden ? note.hidden = false : note.hidden = true;
+    }
+  }
+
+
 
   updateSelectedNote(noteId, newValue) {
     const notes = this.state.notes.slice();
@@ -61,7 +97,7 @@ class App extends React.Component {
     } else if (this.state.page === 'newNote'){
       return <AddNote/>
     } else if (this.state.page === 'selected') {
-      return <NoteView note={this.state.selectedNote} updateSelectedNote={this.updateSelectedNote}/>
+      return (<NoteView note={this.state.selectedNote} updateSelectedNote={this.updateSelectedNote} makeHidden={this.makeHidden} />);
     }
   }
 
@@ -72,6 +108,8 @@ class App extends React.Component {
       const notes = [];
       response.data.forEach((note) => {
         note.selected = false;
+        note.hidden = false;
+        note.starred = false;
         notes.push(note);
       });
 
@@ -81,7 +119,7 @@ class App extends React.Component {
         notes: notes
       })
     })
-    .catch(() => {
+    .catch((err) => {
       console.error(err);
     });
   }
