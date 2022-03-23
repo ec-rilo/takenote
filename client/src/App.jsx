@@ -1,6 +1,7 @@
 import React from 'react';
 import Notes from './components/Notes.jsx';
 import AddNote from './components/AddNote.jsx';
+import NoteView from './components/NoteView.jsx';
 const axios = require('axios');
 
 
@@ -9,38 +10,58 @@ class App extends React.Component {
     super(props);
     this.state = {
       page: 'list',
-      notes: []
+      notes: [],
+      selectedNote: 0
     };
 
-    this.updateNote = this.updateNote.bind(this);
+    this.updateSelectedNote = this.updateSelectedNote.bind(this);
+    this.changePage = this.changePage.bind(this);
   }
 
   changePage(page){
     this.setState({
       page: page
-    })
+    });
   }
 
-  updateNote(noteId, valueToUpdate, newValue) {
+  updateSelectedNote(noteId, newValue) {
     const notes = this.state.notes.slice();
+    let note;
 
     for(let i = 0; i < notes.length; i++) {
       if (notes[i].id === noteId) {
-        notes[i][valueToUpdate] = newValue;
+        notes[i].selected = newValue;
+        note = notes[i];
         break;
       }
     }
 
-    this.setState({
-      notes
-    });
+    if (!note.selected) {
+      note = 0;
+      this.changePage('list');
+    }
+
+    Promise.resolve(this.setState({
+      notes,
+      selectedNote: note
+    }))
+    .then(() => {
+      if (note.selected) {
+        this.changePage('selected')
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+    })
   }
 
   pageRouter(){
     if(this.state.page === 'list'){
-      return <Notes notes={this.state.notes} updateNote={this.updateNote}/>
+      return <Notes notes={this.state.notes} updateSelectedNote={this.updateSelectedNote}/>
     } else if (this.state.page === 'newNote'){
       return <AddNote/>
+    } else if (this.state.page === 'selected') {
+      return <NoteView note={this.state.selectedNote} updateSelectedNote={this.updateSelectedNote}/>
     }
   }
 

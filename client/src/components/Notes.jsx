@@ -1,8 +1,8 @@
 import React from 'react';
 import NoteView from './NoteView.jsx';
 
-const SmallNote = ({ note, updateNote }) => (
-  <div className="note" onClick={() => updateNote(note.id, 'selected', !note.selected)}>
+const SmallNote = ({ note }) => (
+  <div className="note">
     <div className="note-title"><h3>{note.title}</h3></div>
     <div className="note-category"><h4>{note.category}</h4></div>
     <div className="note-desc">{note.note}</div>
@@ -47,15 +47,15 @@ const SmallNote = ({ note, updateNote }) => (
 //   }
 // }
 
-const Notes = ({ notes, updateNote }) => {
+const Notes = ({ notes, updateSelectedNote, changePage }) => {
   return (
     <div>
       <h1>My Notes</h1>
         <div className="notes-list">
           {notes.map((note, index) => {
             return (
-              <div key={index}>
-                {!note.selected ? <SmallNote note={note} updateNote={updateNote}/> : <NoteView note={note} updateNote={updateNote}/>}
+              <div key={index} onClick={() => updateSelectedNote(note.id, !note.selected)}>
+                {!note.selected ? <SmallNote note={note} /> : <NoteView note={note} />}
               </div>
             );
           })}

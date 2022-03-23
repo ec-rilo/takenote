@@ -1,8 +1,12 @@
 import React from 'react';
 
-const Note = ({updateNote, note}) => {
+const Note = ({ note, updateSelectedNote }) => {
   return(
-    <div className="noteView" onClick={() => updateNote(note.id, 'selected', !note.selected)}>
+    <div className="noteView" onClick={() => {
+      if (updateSelectedNote !== undefined) {
+        updateSelectedNote(note.id, !note.selected);
+      }
+    }}>
           <div className="noteViewTitle">
             <h1>{note.title}</h1>
           </div>
